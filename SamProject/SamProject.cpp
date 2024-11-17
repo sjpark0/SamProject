@@ -103,24 +103,7 @@ void PerfomanceTest()
     cout << "GetMask Only (GPU) " << (double)(tickEnd.QuadPart - tickStart.QuadPart) / (double)(tickFreq.QuadPart) << "sec" << endl;
     delete samgpu;    
 }
-void SamOriginal()
-{
-    Sam::Parameter param("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", std::thread::hardware_concurrency());
-    param.providers[0].deviceType = 0; // cpu for preprocess
-    param.providers[1].deviceType = 0; // CUDA for sam
-    Sam sam(param);
-    auto inputSize = sam.getInputSize();
-    
-    cv::Mat image = cv::imread("..\\Data\\000.png");
-    cv::resize(image, image, inputSize);
-    
-    sam.loadImage(image);
-    
-    //cv::Mat mask = sam.autoSegment({ 10, 10 });
-    //cv::Mat mask = sam.getMask({ 361, 306 }); // 533 * 1024 / 960, 286 * 1024 / 960
-    cv::Mat mask = sam.getMask({ 568, 305 });
-    cv::imwrite("output_original.png", mask);
-}
+
 void SamGPU()
 {
     double res;
@@ -172,6 +155,25 @@ void SamGPUHQ()
 }
 
 #endif
+void SamOriginal()
+{
+    Sam::Parameter param("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", std::thread::hardware_concurrency());
+    param.providers[0].deviceType = 0; // cpu for preprocess
+    param.providers[1].deviceType = 0; // CUDA for sam
+    Sam sam(param);
+    auto inputSize = sam.getInputSize();
+
+    cv::Mat image = cv::imread("..\\Data\\000.png");
+    cv::resize(image, image, inputSize);
+
+    sam.loadImage(image);
+
+    //cv::Mat mask = sam.autoSegment({ 10, 10 });
+    //cv::Mat mask = sam.getMask({ 361, 306 }); // 533 * 1024 / 960, 286 * 1024 / 960
+    cv::Mat mask = sam.getMask({ 568, 305 });
+    cv::imwrite("output_original.png", mask);
+}
+
 void SamCPU()
 {
     double res;
