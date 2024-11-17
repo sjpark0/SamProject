@@ -98,7 +98,7 @@ int SJSegmentAnything::InitializeSamModel(const char* preModelPath, const char* 
 	m_pSegmentationFloat = new float[m_OutputShapeSam[0] * m_OutputShapeSam[1] * m_OutputShapeSam[2] * m_OutputShapeSam[3]];
 	m_pSegmentation = new unsigned char[width * height];
 	m_maskInputValue = new float[256 * 256];
-	
+	memset(m_maskInputValue, 0, 256 * 256 * sizeof(float));
 	m_hasMaskValue = 0;
 	m_orig_im_size_values = new float[2];
 	m_orig_im_size_values[0] = (float)m_InputShapePre[2];
@@ -139,16 +139,16 @@ void SJSegmentAnything::SamLoadImage(const cv::Mat& image)
 		}
 	}
 	Ort::RunOptions run_options;
-	
 	m_pSessionPre->Run(run_options, m_inputNamesPre, m_pInputTensorPre, 1, m_outputNamesPre, &m_vecInputTensorsSam[0], 1);
-	FILE* fp;
+
+	/*FILE* fp;
 	fopen_s(&fp, "test5.raw", "wb");
 	fwrite(m_vecInputTensorsSam[0].GetTensorMutableData<unsigned char>(), 1048576, sizeof(unsigned char), fp);
 	fclose(fp);
 	
 	fopen_s(&fp, "test6.raw", "wb");
 	fwrite(m_pPreprocessing, 1048576, sizeof(unsigned char), fp);
-	fclose(fp);
+	fclose(fp);*/
 }
 
 void SJSegmentAnything::GetMask(const std::vector<cv::Point>& points, const std::vector<cv::Point>& negativePoints, const cv::Rect& roi, cv::Mat& outputMaskSam, double& iouValue)
@@ -188,13 +188,13 @@ void SJSegmentAnything::GetMask(const std::vector<cv::Point>& points, const std:
 
 	m_vecInputTensorsSam[1] = Ort::Value::CreateTensor<float>(*m_pMemoryInfo, inputPointValues.data(), 2 * numPoints, inputPointShape.data(), inputPointShape.size());
 	m_vecInputTensorsSam[2] = Ort::Value::CreateTensor<float>(*m_pMemoryInfo, inputLabelValues.data(), numPoints, pointLabelShape.data(), pointLabelShape.size());
-
-
+	
 	int outputNumber = 3, outputMaskIndex = 0, outputIOUIndex = 1;
 	Ort::RunOptions runOptionsSam;
 
 	
 	m_pSessionSam->Run(runOptionsSam, m_inputNamesSam, m_vecInputTensorsSam.data(), m_vecInputTensorsSam.size(), m_outputNamesSam, m_pOutputTensorSam, 1);
+	
 	Mat outputMaskImage(m_OutputShapeSam[2], m_OutputShapeSam[3], CV_32FC1, m_pSegmentationFloat);
 
 
