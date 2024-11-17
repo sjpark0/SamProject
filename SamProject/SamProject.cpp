@@ -36,9 +36,9 @@ void SamCPU()
     std::vector<cv::Point> points;
     cv::Mat mask;
 
-    image = cv::imread("..\\Data\\000.png");
+    image = cv::imread("..\\Data\\100.png");
     points.clear();
-    points.push_back(cv::Point(568, 305));
+    points.push_back(cv::Point(533, 286));
     //points.push_back(cv::Point(2132, 1144));
     //points.push_back(cv::Point(338, 287));
     SJSegmentAnything* samcpu;
