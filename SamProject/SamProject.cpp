@@ -4,6 +4,7 @@
 #include <iostream>
 #include "sam.h"
 #include "SJSegmentAnything.h"
+#include "SJSegmentAnythingCPU.h"
 #include "SJSegmentAnythingGPU.h"
 #include "SJSegmentAnythingGPUHQ.h"
 
@@ -32,27 +33,27 @@ void PerfomanceTest()
     points.push_back(cv::Point(2132, 1144));
 
     SJSegmentAnything* samcpu;
-    SJSegmentAnythingGPU* samgpu;
-    SJSegmentAnythingGPU* samquntized;
+    SJSegmentAnything* samgpu;
+    SJSegmentAnything* samquntized;
     QueryPerformanceCounter(&tickStart);
-    samcpu = new SJSegmentAnything();
-    samcpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", image.cols, image.rows);
+    samcpu = new SJSegmentAnythingCPU();
+    samcpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", 1, image.cols, image.rows);
     inputSize = samcpu->GetInputSize();
     cv::resize(image, image1, inputSize);
     mask = cv::Mat(image.rows, image.cols, CV_8UC1);
-    samcpu->SamLoadImage(image1);
+    samcpu->SamLoadImage(image1, 0);
     samcpu->GetMask(points, {}, {}, mask, res);
     delete samcpu;
     QueryPerformanceCounter(&tickEnd);
     cout << "Warming up (CPU) : " << (double)(tickEnd.QuadPart - tickStart.QuadPart) / (double)(tickFreq.QuadPart) << "sec" << endl;
 
     QueryPerformanceCounter(&tickStart);
-    samcpu = new SJSegmentAnything();
-    samcpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", image.cols, image.rows);
+    samcpu = new SJSegmentAnythingCPU();
+    samcpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", 1, image.cols, image.rows);
     inputSize = samcpu->GetInputSize();
     cv::resize(image, image1, inputSize);
     mask = cv::Mat(image.rows, image.cols, CV_8UC1);
-    samcpu->SamLoadImage(image1); 
+    samcpu->SamLoadImage(image1, 0); 
     samcpu->GetMask(points, {}, {}, mask, res);
     QueryPerformanceCounter(&tickEnd);
     cout << "Second (CPU): " << (double)(tickEnd.QuadPart - tickStart.QuadPart) / (double)(tickFreq.QuadPart) << "sec" << endl;
@@ -70,11 +71,11 @@ void PerfomanceTest()
     //points[0] = cv::Point(2132, 1144);
     QueryPerformanceCounter(&tickStart);
     samgpu = new SJSegmentAnythingGPU();
-    samgpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", image.cols, image.rows);
+    samgpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", 1, image.cols, image.rows);
     inputSize = samgpu->GetInputSize();
     //cv::resize(image, image, inputSize);
     mask = cv::Mat(image.rows, image.cols, CV_8UC1);
-    samgpu->SamLoadImage(image);
+    samgpu->SamLoadImage(image, 0);
     samgpu->GetMask(points, {}, {}, mask, res);
     delete samgpu;
     QueryPerformanceCounter(&tickEnd);
@@ -82,11 +83,11 @@ void PerfomanceTest()
 
     QueryPerformanceCounter(&tickStart);
     samgpu = new SJSegmentAnythingGPU();
-    samgpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", image.cols, image.rows);
+    samgpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", 1, image.cols, image.rows);
     inputSize = samgpu->GetInputSize();
     //cv::resize(image, image, inputSize);
     mask = cv::Mat(image.rows, image.cols, CV_8UC1);
-    samgpu->SamLoadImage(image);
+    samgpu->SamLoadImage(image, 0);
     samgpu->GetMask(points, {}, {}, mask, res);
     QueryPerformanceCounter(&tickEnd);
     cout << "Second (GPU): " << (double)(tickEnd.QuadPart - tickStart.QuadPart) / (double)(tickFreq.QuadPart) << "sec" << endl;
@@ -134,10 +135,10 @@ void SamCPU()
     //points.push_back(cv::Point(2132, 1144));
     points.push_back(cv::Point(1354, 1150));
     SJSegmentAnything* samcpu;
-    samcpu = new SJSegmentAnything();
-    samcpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", image.cols, image.rows);
+    samcpu = new SJSegmentAnythingCPU();
+    samcpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", 1, image.cols, image.rows);
     inputSize = samcpu->GetInputSize();
-    samcpu->SamLoadImage(image);
+    samcpu->SamLoadImage(image, 0);
     printf("here!!\n");
     mask = cv::Mat(image.rows, image.cols, CV_8UC1);
     samcpu->GetMask(points, {}, {}, mask, res);
@@ -159,13 +160,13 @@ void SamGPU()
     points.clear();
     //points.push_back(cv::Point(2132, 1144));
     points.push_back(cv::Point(1354, 1150));
-    SJSegmentAnythingGPU* samgpu;
+    SJSegmentAnything* samgpu;
     samgpu = new SJSegmentAnythingGPU();
-    samgpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", image.cols, image.rows);
+    samgpu->InitializeSamModel("..\\\models\\sam_onnx_preprocess_vit_h.onnx", "..\\models\\sam_onnx_example_vit_h.onnx", 1, image.cols, image.rows);
     inputSize = samgpu->GetInputSize();
     mask = cv::Mat(image.rows, image.cols, CV_8UC1);
 
-    samgpu->SamLoadImage(image);
+    samgpu->SamLoadImage(image, 0);
     samgpu->GetMask(points, {}, {}, mask, res);
     cv::imwrite("output_gpu.png", mask);
 
@@ -222,10 +223,10 @@ void SamTRT()
 }
 int main()
 {   
-    SamOriginal();
+    //SamOriginal();
     //SamCPU();
     //getchar();
-    SamCPU();
+    //SamCPU();
     SamGPU();
 
     //SamTRT();
