@@ -1,0 +1,10 @@
+.git/
+.vs/
+3rdparty/
+x64/
+Data/
+models/
+modelsHQ/
+bin/
+SamPython/env
+SamPython/weights
