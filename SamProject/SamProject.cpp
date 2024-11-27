@@ -12,7 +12,7 @@
 #include "SJSegmentAnythingCPU2.h"
 #include "SJSegmentAnythingGPU2.h"
 
-#include "SJSegmentAnythingTRT.h"
+//#include "SJSegmentAnythingTRT.h"
 #include "opencv2/opencv.hpp"
 #include <Windows.h>
 using namespace std;
@@ -332,7 +332,7 @@ void SamGPUHQ()
 
     delete samgpuhq;
 }
-void SamTRT()
+/*void SamTRT()
 {
     double res;
     cv::Size inputSize;
@@ -353,10 +353,11 @@ void SamTRT()
     mask = cv::Mat(inputSize.height, inputSize.width, CV_8UC1);
     samtrt->SamLoadImage(image);
     samtrt->GetMask(points, {}, {}, mask, res);
-    cv::imwrite("output_trt.png", mask);*/
+    cv::imwrite("output_trt.png", mask);
 
     delete samtrt;
-}
+}*/
+
 int main()
 {   
     //SamOriginal();
@@ -367,9 +368,9 @@ int main()
     //SamCPU();
     //SamGPU();
     
-    //SamCPU2();
-    //SamGPU2();
-    PerfomanceTest2();
+    SamCPU2();
+    SamGPU2();
+    //PerfomanceTest2();
     //SamTRT();
     //SamGPUHQ();
     //PerfomanceTest();
